@@ -9,7 +9,7 @@ from transformers import (
 )
 
 from transformers import Trainer, TrainingArguments
-from datasets import load_dataset
+from datasets import load_dataset, load_from_disk
 
 import wandb
 
@@ -21,8 +21,8 @@ set_seed(seed)
 
 # define our hyperparameters
 training_args = TrainingArguments(
-    load_best_model_at_end=True,
-    output_dir="g5_v1",
+    output_dir="g5_v1_h100",
+    local_rank=0,
     # logging & evaluation strategies
     logging_strategy="steps",
     logging_steps=100,
@@ -30,24 +30,25 @@ training_args = TrainingArguments(
     save_steps=1000,
     report_to="wandb",
     # optimization parameters
-    per_device_train_batch_size=32,
-    learning_rate=1e-4,
+    per_device_train_batch_size=16,
+    learning_rate=3e-4,
     seed=seed,
     num_train_epochs=3,
-    gradient_accumulation_steps=8,
-    warmup_ratio=0.10,
+    gradient_accumulation_steps=16,
+    warmup_ratio=0.05,
     adam_beta1=0.9,
     adam_beta2=0.98,
     bf16 = True,
+#      fp16 = True,
     adam_epsilon=1e-6,
     weight_decay=0.01,
 )
 
 # load processed dataset
-train_dataset = load_dataset("g5dataset", split="train")
+train_dataset = load_from_disk("g5_dataset")["train"]
 
 # load trained tokenizer
-tokenizer = AutoTokenizer.from_pretrained("g5tokenizer")
+tokenizer = AutoTokenizer.from_pretrained("g5_tokenizer")
 
 # load config (for training from scratch, we call .from_config())
 print("Training new model from scratch")
@@ -93,4 +94,4 @@ trainer = Trainer(
 # train the model
 trainer.train()
 
-trainer.save_model(output_dir="g5_v1")
+trainer.save_model(output_dir="g5_v1_h100")

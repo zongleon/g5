@@ -7,7 +7,8 @@ vocab_size = 32_000
 
 dataset = load_dataset("text", 
                        data_files={"train": "data/train.txt", 
-                                   "dev": "data/dev.txt"})
+                                   "dev": "data/dev.txt"},
+                      cache_dir="data/cache")
 
 def dataset_iter():
     for i in dataset["train"]:
