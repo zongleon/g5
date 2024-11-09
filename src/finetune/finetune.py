@@ -1,8 +1,11 @@
 # adapted from https://huggingface.co/docs/transformers/en/tasks/translation
+import os
+os.environ["TRANSFORMERS_CACHE"] = "/scratch/lzong/projects/g5/cache/"
+os.environ["HF_HOME"] = "/scratch/lzong/projects/g5/cache/"
 
 from transformers import (
     DataCollatorForSeq2Seq,
-    AutoTokenizer,
+    T5Tokenizer,
     set_seed,
     AutoModelForSeq2SeqLM, 
     Seq2SeqTrainingArguments, 
@@ -14,22 +17,23 @@ import numpy as np
 
 import wandb
 
-DATA_PATH = "../../g5_translation_data"
-TOKENIZER_PATH = "../../g5_tokenizer"
-MODEL_PATH = "../../g5_v1/checkpoint-15000"
+DATA_PATH = "../../g5_prot_translation_data_v2"
+TOKENIZER_PATH = "Rostlab/prot_t5_xl_uniref50"
+MODEL_PATH = "Rostlab/prot_t5_xl_uniref50"
 
-OUTPUT_PATH = "../../g5_human_mouse_finetune_v2"
+OUTPUT_PATH = "../../g5_human_mouse_finetune_prot_v2"
 
-wandb.init("g5")
+if os.environ.get('LOCAL_RANK', '0') == '0':
+    wandb.init("g5")
 
 # set seed for reproducibility
 seed = 0
 set_seed(seed)
 
-dataset = load_from_disk("../../g5_translation_data")
+dataset = load_from_disk(DATA_PATH)
 dataset = dataset.train_test_split(test_size=0.1)
 
-tokenizer = AutoTokenizer.from_pretrained(TOKENIZER_PATH)
+tokenizer = T5Tokenizer.from_pretrained(TOKENIZER_PATH)
 model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_PATH)
 
 data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=model)
@@ -56,16 +60,22 @@ training_args = Seq2SeqTrainingArguments(
     local_rank=0,
     logging_steps=100,
     evaluation_strategy="steps",
-    eval_steps=100,
-    learning_rate=3e-4,
-    per_device_train_batch_size=8,
-    per_device_eval_batch_size=8,
+    eval_steps=300,
+    save_strategy="steps",
+    save_steps=300,
+    learning_rate=1e-5,
+    per_device_train_batch_size=2,
+    per_device_eval_batch_size=2,
     gradient_accumulation_steps=8,
     weight_decay=0.01,
     save_total_limit=4,
-    num_train_epochs=3,
+    num_train_epochs=1,
     predict_with_generate=True,
     bf16=True,
+    ddp_find_unused_parameters=False,
+    gradient_checkpointing=True,
+    gradient_checkpointing_kwargs={"use_reentrant": False},
+    report_to="wandb" if os.environ.get('LOCAL_RANK', '0') == '0' else [],
 )
 
 trainer = Seq2SeqTrainer(
@@ -81,4 +91,7 @@ trainer = Seq2SeqTrainer(
 # train the model
 trainer.train()
 
-trainer.save_model(output_dir=OUTPUT_PATH + "/model")
+# Save model only on the main process
+if os.environ.get('LOCAL_RANK', '0') == '0':
+    trainer.save_model(output_dir=os.path.join(OUTPUT_PATH, "model"))
+    wandb.finish()
