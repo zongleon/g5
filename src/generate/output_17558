@@ -1,0 +1,13 @@
+You are using the default legacy behaviour of the <class 'transformers.models.t5.tokenization_t5.T5Tokenizer'>. This is expected, and simply means that the `legacy` (previous) behavior will be used so nothing changes for you. If you want to use the new behaviour, set `legacy=False`. This should only be set if you understand what it means, and thouroughly read the reason why this was added as explained in https://github.com/huggingface/transformers/pull/24565
+Traceback (most recent call last):
+  File "/gpfs/fs2/scratch/lzong/projects/g5/src/generate/generate.py", line 54, in <module>
+    main()
+  File "/gpfs/fs2/scratch/lzong/projects/g5/src/generate/generate.py", line 49, in main
+    tokenizer, model = load_model()
+  File "/gpfs/fs2/scratch/lzong/projects/g5/src/generate/generate.py", line 22, in load_model
+    model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_PATH, quantization_config=nf4_config)
+  File "/scratch/lzong/myenvs/mtrain/lib/python3.10/site-packages/transformers/models/auto/auto_factory.py", line 566, in from_pretrained
+    return model_class.from_pretrained(
+  File "/scratch/lzong/myenvs/mtrain/lib/python3.10/site-packages/transformers/modeling_utils.py", line 2714, in from_pretrained
+    raise ImportError(
+ImportError: Using `load_in_8bit=True` requires Accelerate: `pip install accelerate` and the latest version of bitsandbytes `pip install -i https://test.pypi.org/simple/ bitsandbytes` or pip install bitsandbytes` 
