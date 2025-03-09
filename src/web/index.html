@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Translate Interface</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-2xl">
+    <h2 class="text-2xl font-semibold text-center text-gray-800 mb-4">Translate</h2>
+
+    <!-- Language Selector Section -->
+    <div class="flex justify-between mb-4">
+      <!-- Source Language -->
+      <div class="flex items-center space-x-2">
+        <label for="source-language" class="text-gray-600 font-medium">From:</label>
+        <select id="source-language" class="border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="en">English</option>
+          <option value="es">Spanish</option>
+          <option value="fr">French</option>
+          <option value="de">German</option>
+          <!-- Add more languages as needed -->
+        </select>
+      </div>
+
+      <!-- Swap Languages Button -->
+      <button class="text-gray-500 hover:text-blue-500 focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v6h6M20 20v-6h-6M4 10l10 10M20 14L10 4"/>
+        </svg>
+      </button>
+
+      <!-- Target Language -->
+      <div class="flex items-center space-x-2">
+        <label for="target-language" class="text-gray-600 font-medium">To:</label>
+        <select id="target-language" class="border-gray-300 rounded-lg px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="es">Spanish</option>
+          <option value="en">English</option>
+          <option value="fr">French</option>
+          <option value="de">German</option>
+          <!-- Add more languages as needed -->
+        </select>
+      </div>
+    </div>
+
+    <!-- Text Areas for Input and Output -->
+    <div class="space-y-4">
+      <!-- Input Text Area -->
+      <textarea id="input-text" rows="4" placeholder="Enter text to translate..." class="w-full border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+      
+      <!-- Translate Button -->
+      <button class="w-full bg-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2">
+        Translate
+      </button>
+      
+      <!-- Output Text Area -->
+      <textarea id="output-text" rows="4" placeholder="Translation will appear here..." class="w-full border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100" readonly></textarea>
+    </div>
+  </div>
+  <script type="module" src="/main.js"></script>
+</body>
+</html>

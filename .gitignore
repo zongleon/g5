@@ -1,3 +1,7 @@
 .ipynb_checkpoints/
 __pycache__/
 wandb/
+.env/
+*.tar.gz
+models/
+.DS_Store

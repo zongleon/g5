@@ -6,20 +6,21 @@ from transformers import (
 )
 import torch
 
-MODEL_PATH = "../../g5_human_mouse_finetune_prot_v2/model/"
+MODEL_PATH = "../../model/"
 QUANTIZE = True
 
 def load_model():
     tokenizer = T5Tokenizer.from_pretrained("Rostlab/prot_t5_xl_uniref50")
     
     if QUANTIZE: 
-        nf4_config = BitsAndBytesConfig(
-           load_in_4bit=True,
-           bnb_4bit_quant_type="nf4",
-           bnb_4bit_use_double_quant=True,
-           bnb_4bit_compute_dtype=torch.bfloat16
-        )
-        model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_PATH, quantization_config=nf4_config)
+        # nf4_config = BitsAndBytesConfig(
+        #    load_in_4bit=True,
+        #    bnb_4bit_quant_type="nf4",
+        #    bnb_4bit_use_double_quant=True,
+        #    bnb_4bit_compute_dtype=torch.bfloat16
+        # )
+        # model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_PATH, quantization_config=nf4_config)
+        model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_PATH, load_in_8bit=True)
     else:
         model = AutoModelForSeq2SeqLM.from_pretrained(MODEL_PATH)
     return tokenizer, model
